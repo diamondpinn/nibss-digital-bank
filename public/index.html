@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>DIA BANK | Royal Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #f8fafc; font-family: sans-serif; }
+        .gold-text { color: #d4af37; }
+        .gold-bg { background: #d4af37; color: #1e1b4b; }
+        .purple-card { background: linear-gradient(135deg, #4c1d95, #1e1b4b); border: 1px solid #d4af3733; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <div id="app" class="max-w-md mx-auto bg-slate-900/50 p-8 rounded-[2rem] border border-white/10 shadow-2xl">
+        <div class="text-center mb-8">
+            <i class="fas fa-crown gold-text text-4xl mb-2"></i>
+            <h1 class="text-2xl font-bold gold-text tracking-widest">DIA BANK</h1>
+        </div>
+
+        <!-- Login -->
+        <div id="login-form" class="space-y-4">
+            <input id="email" type="email" placeholder="Email" class="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[#d4af37]">
+            <input id="pass" type="password" placeholder="Password" class="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[#d4af37]">
+            <button onclick="doLogin()" class="w-full gold-bg font-bold py-4 rounded-xl">Unlock Vault</button>
+        </div>
+
+        <!-- Dashboard (Hidden) -->
+        <div id="dash" class="hidden space-y-6">
+            <div class="purple-card p-6 rounded-3xl shadow-lg">
+                <p class="text-xs opacity-60 uppercase">Available Funds</p>
+                <h2 class="text-3xl font-bold gold-text mt-1">₦ <span id="bal">0.00</span></h2>
+                <p class="text-sm mt-4 opacity-80" id="name">---</p>
+            </div>
+            <div class="space-y-3">
+                <input id="to" placeholder="Recipient Account" class="w-full p-4 rounded-xl bg-white/5 border border-white/10">
+                <input id="amt" type="number" placeholder="Amount" class="w-full p-4 rounded-xl bg-white/5 border border-white/10">
+                <button onclick="doTransfer()" class="w-full border border-[#d4af37] gold-text font-bold py-4 rounded-xl">Send Money</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function doLogin() {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email.value, password: pass.value})
+            });
+            const data = await res.json();
+            if (res.ok) { 
+                localStorage.setItem('token', data.token); 
+                location.reload(); 
+            } else alert(data.message);
+        }
+
+        async function doTransfer() {
+            const res = await fetch('/api/bank/transfer', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+                body: JSON.stringify({toAccount: to.value, amount: Number(amt.value)})
+            });
+            const data = await res.json();
+            alert(data.message || "Transfer Success!");
+            loadData();
+        }
+
+        async function loadData() {
+            const res = await fetch('/api/bank/balance', {
+                headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}
+            });
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('dash').classList.remove('hidden');
+                bal.innerText = data.balance.toLocaleString();
+                name.innerText = data.accountName;
+            }
+        }
+        if (localStorage.getItem('token')) loadData();
+    </script>
+</body>
+</html>
