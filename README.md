@@ -1,39 +1,43 @@
 ﻿# ♔ DIA Bank - Core Backend System (NibssByPhoenix)
 
-This repository contains the core backend system for **DIA Bank**, developed as part of the Backend Engineering Assignment. The system is designed to support customer onboarding, secure account management, and real-time inter/intra-bank operations.
+### 🌐 **Live Deployment:** [https://dia-digital-bank.onrender.com/](https://dia-digital-bank.onrender.com/)
+
+---
 
 ## 🎯 Project Objective
-To build a functional, secure backend system that integrates with **NibssByPhoenix APIs** to facilitate standard banking operations while ensuring strict data privacy and isolation.
+Developed as the sole Backend Engineer for **DIA Bank**, this system is a functional, secure banking core integrated with **NibssByPhoenix APIs**. It supports real-time customer onboarding, multi-bank settlements, and strict data privacy.
 
-## 🚀 Implemented Requirements
+## 🚀 Quick Access for Supervisors
+* **Production URL:** `https://dia-digital-bank.onrender.com/`
+* **Bank Name:** DIA Bank
+* **Bank Code:** 878
+* **Inter-bank Partner:** PIN Bank (Code: 232)
 
-### 1. Customer Onboarding & Verification
-* **KYC Integration:** Implemented a complete workflow using **BVN/NIN** verification endpoints provided by NibssByPhoenix.
-* **Verification Gate:** Account creation is strictly locked until a customer is successfully verified through the NibssByPhoenix onboarding service.
+## ✅ Implemented Assignment Requirements
+
+### 1. Customer Onboarding & KYC
+* **Verified Enrollment:** Integrated **BVN/NIN** verification via NibssByPhoenix endpoints.
+* **Onboarding Gate:** Account creation is strictly prohibited until successful KYC verification is confirmed.
 
 ### 2. Account Management
-* **NUBAN Generation:** Single-account-per-customer enforcement.
-* **Pre-funding Logic:** Every newly created account is automatically pre-funded with **₦15,000** to facilitate immediate testing and transaction flow as per assignment requirements.
+* **NUBAN Issuance:** Enforced single-account-per-customer logic.
+* **Automated Pre-funding:** Every validated account is automatically pre-funded with **₦15,000** for immediate transaction testing as per assignment guidelines.
 
 ### 3. Core Banking Operations
-* **Live Name Enquiry:** Integrated recipient verification to ensure valid transfers and prevent transaction errors.
-* **Dual-Channel Transfers:** * **Intra-bank:** Seamless transfers between DIA Bank accounts.
-    * **Inter-bank:** Settlement routing to external accounts (e.g., PIN Bank/Colleagues' accounts).
-* **Security & Privacy:** Enforced **Strict Data Isolation**. Customers can only view their own balances and transaction histories; JWT-based authentication ensures one user cannot access another's data.
-* **Status Tracking:** Real-time transaction status checks using reference numbers.
-
-### 4. Technical Integration
-* **API Credentials:** Successfully authenticated via NibssByPhoenix onboarding to retrieve unique credentials.
-* **Swagger Compliance:** All API calls are mapped to the provided NibssByPhoenix documentation.
+* **Live Name Enquiry:** Integrated real-time recipient verification to prevent erroneous transfers.
+* **Settlement Routing:** * **Intra-bank:** Internal transfers within DIA Bank.
+    * **Inter-bank:** Settlement routing to external institutions (e.g., PIN Bank).
+* **Data Isolation:** Implemented strict privacy controls using **JWT Authentication**. Users can only access their personal dashboard and transaction history.
+* **Status Verification:** Reference-based transaction status checks.
 
 ## 🛠 Tech Stack
 * **Backend:** Node.js, Express.js
-* **Security:** JWT (JSON Web Tokens) for session and data isolation
-* **Storage:** Persistent JSON-based data architecture
-* **Frontend:** Professional Banking UI (Public Folder)
+* **Database:** Persistent JSON-based data architecture
+* **Security:** JWT for identity management and API security
+* **Cloud Hosting:** Render (Web Service)
 
 ---
 **Candidate:** Diamond Pinxy  
-**Role:** Sole Backend Engineer  
+**Role:** Backend Engineer  
 **Submission Date:** April 2026  
-*Developed for the NibssByPhoenix Engineering Assignment*
+*NIBSS-Phoenix Digital Banking Assignment Submission*
