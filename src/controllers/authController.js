@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
     let kycRes;
     try { kycRes = await phoenixAPI.post(validateEndpoint, kycPayload); console.log('KYC:', JSON.stringify(kycRes.data)); }
     catch (e) { return res.status(400).json({ message: 'BVN not found in NIBSS', detail: e.response ? e.response.data : e.message }); }
-    const isValid = kycRes.data.valid === true || kycRes.data.success === true;
+    const isValid = kycRes.data.valid === true || kycRes.data.success === true || (kycRes.data.message && kycRes.data.message.toLowerCase().includes("verified"));
     if (!isValid) return res.status(400).json({ message: 'KYC not valid', nibssResponse: kycRes.data });
     let accountRes;
     try {
@@ -43,7 +43,7 @@ exports.register = async (req, res) => {
     }
     const nibssData = accountRes.data;
     console.log('nibssData keys:', Object.keys(nibssData));
-    const accountNumber = nibssData.accountNumber || nibssData.account || (nibssData.data && nibssData.data.accountNumber);
+    const rawAccount = nibssData.accountNumber || nibssData.account || (nibssData.data && nibssData.data.accountNumber); const accountNumber = (rawAccount && typeof rawAccount === "object") ? rawAccount.accountNumber : rawAccount;
     console.log('Extracted accountNumber:', accountNumber);
     if (!accountNumber) return res.status(500).json({ message: 'No account number in NIBSS response', nibssData: nibssData });
     const salt = await bcrypt.genSalt(10);
@@ -56,3 +56,6 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: 'Unexpected server error', error: err.message });
   }
 };
+
+
+

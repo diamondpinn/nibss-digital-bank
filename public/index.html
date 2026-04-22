@@ -1,83 +1,243 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>DIA BANK | Royal Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { background: #0f172a; color: #f8fafc; font-family: sans-serif; }
-        .gold-text { color: #d4af37; }
-        .gold-bg { background: #d4af37; color: #1e1b4b; }
-        .purple-card { background: linear-gradient(135deg, #4c1d95, #1e1b4b); border: 1px solid #d4af3733; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIA Bank</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0d0d1a;color:#f0eaff;min-height:100vh}
+header{background:linear-gradient(135deg,#2d0060,#1a0040);padding:18px 40px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #d4af3733}
+header h1{font-size:1.6rem;color:#d4af37;letter-spacing:3px}
+#user-bar{font-size:0.85rem;color:#c8b8ff}
+.container{max-width:960px;margin:30px auto;padding:0 20px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.tab{padding:10px 22px;border:none;border-radius:30px;cursor:pointer;font-size:0.85rem;font-weight:700;background:#1a0040;color:#c8b8ff;border:1px solid #d4af3733;transition:all 0.3s}
+.tab.active,.tab:hover{background:#d4af37;color:#1a0040;border-color:#d4af37}
+.panel{display:none;background:#110028;border-radius:20px;padding:30px;border:1px solid #d4af3733}
+.panel.active{display:block}
+h2{color:#d4af37;margin-bottom:20px;font-size:1.1rem;letter-spacing:1px}
+.fg{margin-bottom:16px}
+label{display:block;margin-bottom:6px;font-size:0.8rem;color:#c8b8ff;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+input,select{width:100%;padding:13px 16px;border:1px solid #d4af3733;border-radius:12px;background:#0d0d1a;color:#f0eaff;font-size:0.95rem;outline:none;transition:border 0.3s}
+input:focus,select:focus{border-color:#d4af37}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#d4af37,#b8860b);color:#1a0040;border:none;border-radius:12px;font-size:1rem;font-weight:800;cursor:pointer;margin-top:8px;letter-spacing:1px;transition:opacity 0.3s}
+.btn:hover{opacity:0.9}
+.res{margin-top:18px;padding:16px;border-radius:12px;background:#0a0015;border:1px solid #d4af3733;font-size:0.83rem;white-space:pre-wrap;color:#a8ff78;max-height:250px;overflow-y:auto}
+.res.err{color:#ff7c7c;border-color:#ff000044}
+.balance-card{background:linear-gradient(135deg,#2d0060,#4b0082);border-radius:20px;padding:32px;text-align:center;margin-bottom:24px;border:1px solid #d4af3744}
+.balance-card .crown{font-size:2rem;margin-bottom:8px}
+.balance-card .amt{font-size:2.8rem;font-weight:800;color:#d4af37}
+.balance-card .name{font-size:1rem;color:#c8b8ff;margin-top:10px}
+.balance-card .acct{font-size:0.9rem;color:#d4af3799;letter-spacing:3px;margin-top:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #d4af3722;font-size:0.83rem}
+th{color:#d4af37;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.cr{color:#a8ff78}.db{color:#ff7c7c}
+.pill{padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700}
+.pill-cr{background:#a8ff7822;color:#a8ff78}.pill-db{background:#ff7c7c22;color:#ff7c7c}
+.alert{padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:0.82rem;background:#d4af3715;border:1px solid #d4af3744;color:#d4af37}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}header{flex-direction:column;gap:8px}}
+</style>
 </head>
-<body class="p-4 md:p-10">
-    <div id="app" class="max-w-md mx-auto bg-slate-900/50 p-8 rounded-[2rem] border border-white/10 shadow-2xl">
-        <div class="text-center mb-8">
-            <i class="fas fa-crown gold-text text-4xl mb-2"></i>
-            <h1 class="text-2xl font-bold gold-text tracking-widest">DIA BANK</h1>
-        </div>
+<body>
+<header>
+  <h1>&#9812; DIA BANK</h1>
+  <div id="user-bar">Not logged in</div>
+</header>
+<div class="container">
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="showTab('login',this)">Login</button>
+    <button class="tab" onclick="showTab('register',this)">Register</button>
+    <button class="tab" onclick="showTab('dashboard',this)">Dashboard</button>
+    <button class="tab" onclick="showTab('transfer',this)">Transfer</button>
+    <button class="tab" onclick="showTab('enquiry',this)">Name Enquiry</button>
+    <button class="tab" onclick="showTab('history',this)">History</button>
+    <button class="tab" onclick="showTab('txstatus',this)">Tx Status</button>
+  </div>
 
-        <!-- Login -->
-        <div id="login-form" class="space-y-4">
-            <input id="email" type="email" placeholder="Email" class="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[#d4af37]">
-            <input id="pass" type="password" placeholder="Password" class="w-full p-4 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[#d4af37]">
-            <button onclick="doLogin()" class="w-full gold-bg font-bold py-4 rounded-xl">Unlock Vault</button>
-        </div>
+  <div id="login" class="panel active">
+    <h2>Login to DIA Bank</h2>
+    <div class="fg"><label>Email</label><input id="l-email" type="email" placeholder="jane@diabank.com"></div>
+    <div class="fg"><label>Password</label><input id="l-pass" type="password" placeholder="Password123"></div>
+    <button class="btn" onclick="doLogin()">Unlock Vault</button>
+    <div class="res" id="login-res" style="display:none"></div>
+  </div>
 
-        <!-- Dashboard (Hidden) -->
-        <div id="dash" class="hidden space-y-6">
-            <div class="purple-card p-6 rounded-3xl shadow-lg">
-                <p class="text-xs opacity-60 uppercase">Available Funds</p>
-                <h2 class="text-3xl font-bold gold-text mt-1">₦ <span id="bal">0.00</span></h2>
-                <p class="text-sm mt-4 opacity-80" id="name">---</p>
-            </div>
-            <div class="space-y-3">
-                <input id="to" placeholder="Recipient Account" class="w-full p-4 rounded-xl bg-white/5 border border-white/10">
-                <input id="amt" type="number" placeholder="Amount" class="w-full p-4 rounded-xl bg-white/5 border border-white/10">
-                <button onclick="doTransfer()" class="w-full border border-[#d4af37] gold-text font-bold py-4 rounded-xl">Send Money</button>
-            </div>
-        </div>
+  <div id="register" class="panel">
+    <h2>Open a DIA Bank Account</h2>
+    <div class="alert">First insert your BVN or NIN into NIBSS via Postman, then register here.</div>
+    <div class="grid2">
+      <div class="fg"><label>First Name</label><input id="r-first" placeholder="e.g. Diamond"></div>
+      <div class="fg"><label>Last Name</label><input id="r-last" placeholder="e.g. Pinxy"></div>
     </div>
+    <div class="fg"><label>Email</label><input id="r-email" type="email" placeholder="you@diabank.com"></div>
+    <div class="fg"><label>Password</label><input id="r-pass" type="password" placeholder="Create a password"></div>
+    <div class="grid2">
+      <div class="fg"><label>KYC Type</label>
+        <select id="r-kyctype"><option value="BVN">BVN</option><option value="NIN">NIN</option></select>
+      </div>
+      <div class="fg"><label>BVN / NIN (11 digits)</label><input id="r-kycid" placeholder="11-digit number" maxlength="11"></div>
+    </div>
+    <div class="fg"><label>Date of Birth</label><input id="r-dob" type="date"></div>
+    <button class="btn" onclick="doRegister()">Create My Account</button>
+    <div class="res" id="register-res" style="display:none"></div>
+  </div>
 
-    <script>
-        async function doLogin() {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email.value, password: pass.value})
-            });
-            const data = await res.json();
-            if (res.ok) { 
-                localStorage.setItem('token', data.token); 
-                location.reload(); 
-            } else alert(data.message);
-        }
+  <div id="dashboard" class="panel">
+    <h2>Account Dashboard</h2>
+    <div class="balance-card">
+      <div class="crown">&#9812;</div>
+      <div class="amt" id="bal-amt">NGN 0.00</div>
+      <div class="name" id="bal-name">---</div>
+      <div class="acct" id="bal-acct">Account: ---</div>
+    </div>
+    <button class="btn" style="margin-top:0" onclick="loadBalance()">Refresh Balance</button>
+  </div>
 
-        async function doTransfer() {
-            const res = await fetch('/api/bank/transfer', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
-                body: JSON.stringify({toAccount: to.value, amount: Number(amt.value)})
-            });
-            const data = await res.json();
-            alert(data.message || "Transfer Success!");
-            loadData();
-        }
+  <div id="transfer" class="panel">
+    <h2>Send Money</h2>
+    <div class="alert">Intra-bank: send to another DIA Bank account. Inter-bank: send to any other bank account on NIBSS.</div>
+    <div class="fg"><label>Recipient Account Number</label><input id="t-to" placeholder="10-digit account number" maxlength="10"></div>
+    <div class="fg"><label>Amount (NGN)</label><input id="t-amt" type="number" placeholder="e.g. 2000" min="1"></div>
+    <div class="fg"><label>Description</label><input id="t-desc" placeholder="e.g. Payment for services"></div>
+    <button class="btn" onclick="doTransfer()">Authorize Transfer</button>
+    <div class="res" id="transfer-res" style="display:none"></div>
+  </div>
 
-        async function loadData() {
-            const res = await fetch('/api/bank/balance', {
-                headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}
-            });
-            const data = await res.json();
-            if (res.ok) {
-                document.getElementById('login-form').classList.add('hidden');
-                document.getElementById('dash').classList.remove('hidden');
-                bal.innerText = data.balance.toLocaleString();
-                name.innerText = data.accountName;
-            }
-        }
-        if (localStorage.getItem('token')) loadData();
-    </script>
+  <div id="enquiry" class="panel">
+    <h2>Name Enquiry</h2>
+    <div class="alert">Always verify a recipient before sending money.</div>
+    <div class="fg"><label>Account Number</label><input id="e-acct" placeholder="10-digit account number" maxlength="10"></div>
+    <button class="btn" onclick="doEnquiry()">Look Up Account</button>
+    <div class="res" id="enquiry-res" style="display:none"></div>
+  </div>
+
+  <div id="history" class="panel">
+    <h2>Transaction History</h2>
+    <div class="alert">You can only view your own transactions. Data privacy is enforced by JWT.</div>
+    <button class="btn" style="margin-bottom:16px" onclick="loadHistory()">Load My Transactions</button>
+    <div id="history-table"></div>
+  </div>
+
+  <div id="txstatus" class="panel">
+    <h2>Transaction Status Check</h2>
+    <div class="fg"><label>Transaction Reference</label><input id="tx-ref" placeholder="Paste transaction reference here"></div>
+    <button class="btn" onclick="checkTxStatus()">Check Status</button>
+    <div class="res" id="txstatus-res" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+let token = localStorage.getItem('dia_token') || '';
+let currentUser = JSON.parse(localStorage.getItem('dia_user') || 'null');
+if(currentUser) document.getElementById('user-bar').textContent = 'Welcome, ' + currentUser.firstName + '  |  ' + currentUser.accountNumber;
+
+function showTab(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  el.classList.add('active');
+  if(name==='dashboard') loadBalance();
+  if(name==='history') loadHistory();
+}
+
+function showRes(id, data, isErr) {
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  el.className = 'res' + (isErr ? ' err' : '');
+  el.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+}
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value;
+  const pass = document.getElementById('l-pass').value;
+  try {
+    const r = await fetch(API+'/auth/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const d = await r.json();
+    if(r.ok) {
+      token = d.token; currentUser = d.user;
+      localStorage.setItem('dia_token', token);
+      localStorage.setItem('dia_user', JSON.stringify(d.user));
+      document.getElementById('user-bar').textContent = 'Welcome, ' + d.user.firstName + '  |  ' + d.user.accountNumber;
+      showRes('login-res', 'Login successful! Welcome ' + d.user.firstName + '. Account: ' + d.user.accountNumber, false);
+    } else showRes('login-res', d, true);
+  } catch(e) { showRes('login-res', 'Cannot reach server. Is npm start running?', true); }
+}
+
+async function doRegister() {
+  const body = {
+    firstName: document.getElementById('r-first').value,
+    lastName: document.getElementById('r-last').value,
+    email: document.getElementById('r-email').value,
+    password: document.getElementById('r-pass').value,
+    kycType: document.getElementById('r-kyctype').value,
+    kycID: document.getElementById('r-kycid').value,
+    dob: document.getElementById('r-dob').value
+  };
+  try {
+    const r = await fetch(API+'/auth/register', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d = await r.json();
+    showRes('register-res', d, !r.ok);
+  } catch(e) { showRes('register-res', 'Cannot reach server', true); }
+}
+
+async function loadBalance() {
+  if(!token) { document.getElementById('bal-amt').textContent = 'Please login first'; return; }
+  try {
+    const r = await fetch(API+'/bank/balance', {headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    if(r.ok) {
+      document.getElementById('bal-amt').textContent = 'NGN ' + Number(d.balance).toLocaleString('en-NG', {minimumFractionDigits:2});
+      document.getElementById('bal-name').textContent = d.accountName;
+      document.getElementById('bal-acct').textContent = 'Account: ' + d.accountNumber;
+    }
+  } catch(e) {}
+}
+
+async function doTransfer() {
+  if(!token) { showRes('transfer-res', 'Please login first', true); return; }
+  const body = {toAccount: document.getElementById('t-to').value, amount: Number(document.getElementById('t-amt').value), description: document.getElementById('t-desc').value || 'DIA Bank Transfer'};
+  try {
+    const r = await fetch(API+'/bank/transfer', {method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
+    const d = await r.json();
+    showRes('transfer-res', d, !r.ok);
+    if(r.ok) loadBalance();
+  } catch(e) { showRes('transfer-res', 'Server error', true); }
+}
+
+async function doEnquiry() {
+  if(!token) { showRes('enquiry-res', 'Please login first', true); return; }
+  const acct = document.getElementById('e-acct').value;
+  try {
+    const r = await fetch(API+'/bank/name-enquiry/'+acct, {headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    showRes('enquiry-res', d, !r.ok);
+  } catch(e) { showRes('enquiry-res', 'Server error', true); }
+}
+
+async function loadHistory() {
+  if(!token) { document.getElementById('history-table').innerHTML = '<p style="color:#ff7c7c">Please login first</p>'; return; }
+  try {
+    const r = await fetch(API+'/bank/history', {headers:{Authorization:'Bearer '+token}});
+    const data = await r.json();
+    if(!Array.isArray(data) || !data.length) { document.getElementById('history-table').innerHTML = '<p style="color:#d4af37">No transactions yet.</p>'; return; }
+    let rows = data.map(t => '<tr><td>'+new Date(t.date).toLocaleDateString('en-GB')+'</td><td><span class="pill pill-'+t.type.toLowerCase()+'">'+t.type+'</span></td><td class="'+(t.type==='CREDIT'?'cr':'db')+'">NGN '+Number(t.amount).toLocaleString()+'</td><td>'+(t.recipientAccount||'---')+'</td><td>'+(t.description||'---')+'</td><td>'+(t.status||'---')+'</td></tr>').join('');
+    document.getElementById('history-table').innerHTML = '<table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Account</th><th>Description</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  } catch(e) {}
+}
+
+async function checkTxStatus() {
+  if(!token) { showRes('txstatus-res', 'Please login first', true); return; }
+  const ref = document.getElementById('tx-ref').value;
+  try {
+    const r = await fetch(API+'/bank/transaction/'+ref, {headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    showRes('txstatus-res', d, !r.ok);
+  } catch(e) { showRes('txstatus-res', 'Server error', true); }
+}
+</script>
 </body>
 </html>
