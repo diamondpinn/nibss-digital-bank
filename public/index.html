@@ -34,6 +34,7 @@ th{color:#d4af37;font-weight:700;text-transform:uppercase}
 .cr{color:#a8ff78}.db{color:#ff7c7c}
 .pill{padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700}
 .pill-credit{background:#a8ff7822;color:#a8ff78}.pill-debit{background:#ff7c7c22;color:#ff7c7c}
+.info-box{background:#d4af3711;padding:15px;border-radius:12px;margin-bottom:20px;border-left:4px solid #d4af37;font-size:0.85rem;color:#d4af37}
 </style>
 </head>
 <body>
@@ -46,15 +47,27 @@ th{color:#d4af37;font-weight:700;text-transform:uppercase}
 </header>
 <div class="container">
    <div class="tabs" id="tab-bar">
-     <button class="tab active" id="tab-login" onclick="showTab('login',this)">Login</button>
-     <button class="tab" id="tab-register" onclick="showTab('register',this)">Register</button>
-     <button class="tab" id="tab-dashboard" onclick="showTab('dashboard',this)">Dashboard</button>
-     <button class="tab" id="tab-transfer" onclick="showTab('transfer',this)">Transfer</button>
-     <button class="tab" id="tab-history" onclick="showTab('history',this)">History</button>
-     <button class="tab" id="tab-txstatus" onclick="showTab('txstatus',this)">Status Check</button>
+     <button class="tab active" id="tab-onboarding" onclick="showTab('onboarding',this)">1. Onboarding</button>
+     <button class="tab" id="tab-login" onclick="showTab('login',this)">2. Login</button>
+     <button class="tab" id="tab-register" onclick="showTab('register',this)">3. Register</button>
+     <button class="tab" id="tab-dashboard" onclick="showTab('dashboard',this)" style="display:none">Dashboard</button>
+     <button class="tab" id="tab-transfer" onclick="showTab('transfer',this)" style="display:none">Transfer</button>
+     <button class="tab" id="tab-history" onclick="showTab('history',this)" style="display:none">History</button>
+     <button class="tab" id="tab-txstatus" onclick="showTab('txstatus',this)" style="display:none">Status Check</button>
    </div>
 
-   <div id="login" class="panel active">
+   <div id="onboarding" class="panel active">
+     <h2>NIBSS Identity Portal</h2>
+     <div class="info-box">STEP 1: Create your digital identity in the Phoenix Sandbox before opening a bank account.</div>
+     <div class="fg"><label>First Name</label><input id="o-first"></div>
+     <div class="fg"><label>Last Name</label><input id="o-last"></div>
+     <div class="fg"><label>Identity Type</label><select id="o-type"><option value="BVN">BVN</option><option value="NIN">NIN</option></select></div>
+     <div class="fg"><label>Desired 11-Digit ID</label><input id="o-id" maxlength="11" placeholder="e.g. 12345678901"></div>
+     <button class="btn" onclick="doOnboard()">Create Digital Identity</button>
+     <div class="res" id="onboard-res" style="display:none"></div>
+   </div>
+
+   <div id="login" class="panel">
      <h2>Secure Login</h2>
      <div class="fg"><label>Email</label><input id="l-email" type="email"></div>
      <div class="fg"><label>Password</label><input id="l-pass" type="password"></div>
@@ -64,6 +77,7 @@ th{color:#d4af37;font-weight:700;text-transform:uppercase}
 
    <div id="register" class="panel">
      <h2>Enrollment</h2>
+     <div class="info-box">STEP 2: Use the BVN/NIN you created in Step 1 to register.</div>
      <div class="fg"><label>First Name</label><input id="r-first"></div>
      <div class="fg"><label>Last Name</label><input id="r-last"></div>
      <div class="fg"><label>Email</label><input id="r-email" type="email"></div>
@@ -120,7 +134,7 @@ th{color:#d4af37;font-weight:700;text-transform:uppercase}
 </div>
 
 <script>
-const API = 'http://localhost:5000/api';
+const API = '/api'; // Modified for Render relative paths
 let token = localStorage.getItem('dia_token') || '';
 let currentUser = JSON.parse(localStorage.getItem('dia_user') || 'null');
 
@@ -138,6 +152,20 @@ function showRes(id, data, isErr) {
     el.style.display = 'block';
     el.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
     el.style.color = isErr ? '#ff7c7c' : '#a8ff78';
+}
+
+async function doOnboard() {
+    const body = { 
+        firstName: document.getElementById('o-first').value, 
+        lastName: document.getElementById('o-last').value,
+        idNumber: document.getElementById('o-id').value,
+        type: document.getElementById('o-type').value 
+    };
+    try {
+        const r = await fetch(API+'/auth/onboard-nibss', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const d = await r.json();
+        showRes('onboard-res', r.ok ? "Success! Identity created in NIBSS Sandbox. Proceed to Register." : d, !r.ok);
+    } catch(e) { showRes('onboard-res', "Onboarding Failed", true); }
 }
 
 async function autoSearch(val) {
@@ -169,11 +197,20 @@ async function doLogin() {
             token = d.token; currentUser = d.user;
             localStorage.setItem('dia_token', token);
             localStorage.setItem('dia_user', JSON.stringify(d.user));
-            document.getElementById('user-info').textContent = "Welcome, " + d.user.firstName;
-            document.getElementById('logout-btn').style.display = 'block';
+            updateUIForAuth();
             showTab('dashboard', document.getElementById('tab-dashboard'));
         } else { showRes('login-res', d, true); }
     } catch(e) { showRes('login-res', "Server Error", true); }
+}
+
+function updateUIForAuth() {
+    if(currentUser) {
+        document.getElementById('user-info').textContent = "Welcome, " + currentUser.firstName;
+        document.getElementById('logout-btn').style.display = 'block';
+        ['tab-dashboard', 'tab-transfer', 'tab-history', 'tab-txstatus'].forEach(id => {
+            document.getElementById(id).style.display = 'block';
+        });
+    }
 }
 
 async function loadBalance() {
@@ -234,9 +271,8 @@ async function doRegister() {
 
 function doLogout() { localStorage.clear(); location.reload(); }
 
+updateUIForAuth();
 if(token && currentUser) {
-    document.getElementById('user-info').textContent = "Welcome, " + currentUser.firstName;
-    document.getElementById('logout-btn').style.display = 'block';
     showTab('dashboard', document.getElementById('tab-dashboard'));
 }
 </script>
