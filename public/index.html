@@ -47,7 +47,6 @@ th{color:#d4af37;font-weight:700;text-transform:uppercase}
 </header>
 <div class="container">
    <div class="tabs" id="tab-bar">
-     <button class="tab active" id="tab-onboarding" onclick="showTab('onboarding',this)">1. Onboarding</button>
      <button class="tab" id="tab-login" onclick="showTab('login',this)">2. Login</button>
      <button class="tab" id="tab-register" onclick="showTab('register',this)">3. Register</button>
      <button class="tab" id="tab-dashboard" onclick="showTab('dashboard',this)" style="display:none">Dashboard</button>
@@ -56,9 +55,6 @@ th{color:#d4af37;font-weight:700;text-transform:uppercase}
      <button class="tab" id="tab-txstatus" onclick="showTab('txstatus',this)" style="display:none">Status Check</button>
    </div>
 
-   <div id="onboarding" class="panel active">
-     <h2>NIBSS Identity Portal</h2>
-     <div class="info-box">STEP 1: Create your digital identity in the Phoenix Sandbox before opening a bank account.</div>
      <div class="fg"><label>First Name</label><input id="o-first"></div>
      <div class="fg"><label>Last Name</label><input id="o-last"></div>
      <div class="fg"><label>Identity Type</label><select id="o-type"><option value="BVN">BVN</option><option value="NIN">NIN</option></select></div>
